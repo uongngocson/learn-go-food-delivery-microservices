@@ -238,7 +238,3 @@ docker compose -f deployments/docker-compose/docker-compose.infrastructure.yaml 
 cd internal\services\catalogwriteservice; go run ./cmd/app/main.go
 cd internal\services\catalogreadservice; go run ./cmd/app/main.go
 cd internal\services\orderservice; go run ./cmd/app/main.go
-
-
-
-# day1: learn github
