@@ -32,7 +32,7 @@ func NewEventstoreDBTestContainers(l logger.Logger) contracts.EventstoreDBContai
 			TcpPort: 1113,
 			// HTTP is the primary protocol for EventStoreDB. It is used in gRPC communication and HTTP APIs (management, gossip and diagnostics).
 			HttpPort:  2113,
-			Tag:       "latest",
+			Tag:       "24.10",
 			ImageName: "eventstore/eventstore",
 			Name:      "eventstoredb-testcontainers",
 		},
@@ -139,13 +139,12 @@ func (g *eventstoredbTestContainers) getRunOptions(
 		ExposedPorts: g.defaultOptions.Ports,
 		WaitingFor:   wait.ForListeningPort(nat.Port(g.defaultOptions.Ports[0])).WithPollInterval(2 * time.Second),
 		Hostname:     g.defaultOptions.Host,
-		// we use `EVENTSTORE_IN_MEM` for use eventstoredb in-memory mode in tests
-		Env: map[string]string{
-			"EVENTSTORE_START_STANDARD_PROJECTIONS": "false",
-			"EVENTSTORE_INSECURE":                   "true",
-			"EVENTSTORE_ENABLE_EXTERNAL_TCP":        "true",
-			"EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP":  "true",
-			"EVENTSTORE_MEM_DB":                     "true",
+		Cmd: []string{
+			"--insecure",
+			"--run-projections=All",
+			"--enable-atom-pub-over-http",
+			"--mem-db",
+			"--start-standard-projections=false",
 		},
 	}
 

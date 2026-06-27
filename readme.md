@@ -227,3 +227,14 @@ The project is under [MIT license](https://github.com/mehdihadeli/go-food-delive
 - [https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example)
 - [https://github.com/kgrzybek/modular-monolith-with-ddd](https://github.com/kgrzybek/modular-monolith-with-ddd)
 - [https://github.com/jbogard/ContosoUniversityDotNetCore-Pages](https://github.com/jbogard/ContosoUniversityDotNetCore-Pages)
+
+
+
+# 1. Bật hạ tầng
+cd d:\go-food-delivery-microservices\go-food-delivery-microservices
+docker compose -f deployments/docker-compose/docker-compose.infrastructure.yaml up -d
+
+# 2. Chạy từng service (mỗi terminal riêng)
+cd internal\services\catalogwriteservice; go run ./cmd/app/main.go
+cd internal\services\catalogreadservice; go run ./cmd/app/main.go
+cd internal\services\orderservice; go run ./cmd/app/main.go

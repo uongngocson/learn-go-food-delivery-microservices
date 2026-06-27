@@ -28,7 +28,7 @@ services:
     image: prom/prometheus:latest
     pull_policy: if_not_present
     container_name: prometheus
-    restart: unless-stopped
+    restart: unless-stopped # restart: always
     user: root
     ports:
       - ${PROMETHEUS_HOST_PORT:-9090}:${PROMETHEUS_PORT:-9090}
@@ -203,26 +203,21 @@ services:
 
   # https://developers.eventstore.com/server/v21.10/installation.html#insecure-single-node
   # https://hub.docker.com/r/eventstore/eventstore/tags
-  # https://stackoverflow.com/questions/65272764/ports-are-not-available-listen-tcp-0-0-0-0-50070-bind-an-attempt-was-made-to
-  # EVENTSTORE_MEM_DB=true, it tells the EventStoreDB container to use an in-memory database, which means that any data stored in EventStoreDB will not be persisted between container restarts. Once the container is stopped or restarted, all data will be lost.
+  # Orders service connects via gRPC on port 2113 (esdb://localhost:2113?tls=false).
+  # Legacy TCP options (ExtTcpPort, EnableExternalTcp, HttpPort) were removed in EventStoreDB 25.x.
   eventstore:
-    image: eventstore/eventstore:latest
+    image: eventstore/eventstore:24.10
     pull_policy: if_not_present
     container_name: eventstore
     restart: unless-stopped
-    environment:
-      - EVENTSTORE_CLUSTER_SIZE=1
-      - EVENTSTORE_RUN_PROJECTIONS=All
-      - EVENTSTORE_START_STANDARD_PROJECTIONS=false
-      - EVENTSTORE_EXT_TCP_PORT=1113
-      - EVENTSTORE_HTTP_PORT=2113
-      - EVENTSTORE_INSECURE=true
-      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
-      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
-      - EVENTSTORE_MEM_DB=true
+    command:
+      - --insecure
+      - --run-projections=All
+      - --enable-atom-pub-over-http
+      - --mem-db
+      - --start-standard-projections=false
     ports:
-      - ${EVENTSTORE_TCP_HOST_PORT:-1113}:${EVENTSTORE_TCP_PORT:-1113}
-      - ${EVENTSTORE_HOST_PORT:-2113}:${EVENTSTORE_PORT:-2113}
+      - ${EVENTSTORE_HOST_PORT:-2113}:2113
     volumes:
       - type: volume
         source: eventstore-volume-data
